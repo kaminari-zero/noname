@@ -1,10 +1,25 @@
-const express = require("express");
-// const https = require("https");
-const minimist = require("minimist");
-const bodyParser = require("body-parser");
-const app = express();
-const fs = require("fs");
-const path = require("path");
+//#region 原来的nodejs环境引入方式
+// const express = require("express");
+// // const https = require("https");
+// const minimist = require("minimist");
+// const bodyParser = require("body-parser");
+// const app = express();
+// const fs = require("fs");
+// const path = require("path");
+//#endregion
+
+//#region 启用deno运行环境的ESModule支持的引入方式（不需要去编译，也不需要引入大量不需要的node_modules包）
+import express from "express";
+import minimist from "minimist";
+import bodyParser from "body-parser";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const app = express(); // express 实例化不需要改变，保持这种方式即可
+//#endregion
 
 const oneYear = 60 * 1000 * 60 * 24 * 365;
 
@@ -104,7 +119,7 @@ app.get("/readFile", (req, res) => {
 	if (fs.existsSync(join(fileName))) {
 		res.json(successfulJson(Array.prototype.slice.call(new Uint8Array(fs.readFileSync(join(fileName))))));
 	} else {
-		res.json(failedJson(404, "文件不存在"));
+		res.json(failedJson(404, "文件不存在--readFile--"+fileName));
 	}
 });
 
@@ -116,7 +131,7 @@ app.get("/readFileAsText", (req, res) => {
 	if (fs.existsSync(join(fileName))) {
 		res.json(successfulJson(fs.readFileSync(join(fileName), "utf-8")));
 	} else {
-		res.json(failedJson(404, "文件不存在"));
+		res.json(failedJson(404, "文件不存在--readFileAsText--"+fileName));
 	}
 });
 
@@ -136,7 +151,7 @@ app.get("/removeFile", (req, res) => {
 		throw new Error(`只能访问${__dirname}的文件或文件夹`);
 	}
 	if (!fs.existsSync(join(fileName))) {
-		throw new Error(`文件不存在`);
+		throw new Error(`文件不存在--removeFile--${fileName}`);
 	}
 	const stat = fs.statSync(join(fileName));
 	if (stat.isDirectory()) {
@@ -194,7 +209,7 @@ app.get("/checkFile", (req, res) => {
 			res.json(failedJson(404, "不是一个文件"));
 		}
 	} catch (error) {
-		res.json(failedJson(404, "文件不存在或无法访问"));
+		res.json(failedJson(404, "文件不存在或无法访问--checkFile"+fileName));
 	}
 });
 

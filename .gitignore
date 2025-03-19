@@ -40,3 +40,13 @@ update.html
 update.js
 *.txt
 *.pdf
+
+#个人用忽略文件，以后去掉
+.vscode
+noname-server-main
+noname-server-dist
+
+# 编译的nodejs服务器启动文件
+index.js
+localhost.crt
+localhost.decrypted.key
